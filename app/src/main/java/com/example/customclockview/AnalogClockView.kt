@@ -8,7 +8,6 @@ import android.icu.util.TimeZone
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import java.lang.Integer.min
