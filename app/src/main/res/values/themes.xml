@@ -12,5 +12,13 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+        <item name="clockViewStyle">@style/DefaultClockViewStyle</item>
+
     </style>
+
+    <style name="DefaultClockViewStyle">
+        <item name="android:layout_margin">5dp</item>
+    </style>
+
 </resources>
