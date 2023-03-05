@@ -5,6 +5,8 @@ import android.graphics.*
 import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
 import android.icu.util.TimeZone
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
@@ -134,7 +136,7 @@ class AnalogClockView(
         super.onDraw(canvas)
         if (canvas == null || fieldRect.width() <= 0 || fieldRect.height() <= 0) return
         drawBase(canvas)
-        val hoursDegree = 360f * timeInSeconds / (24 * 60 * 60)
+        val hoursDegree = 360f * timeInSeconds / (12 * 60 * 60)
         drawHandle(canvas, bmHandleHour, HOUR_TAIL, hoursDegree)
         val minutesDegree = 360f * (timeInSeconds % (60 * 60)) / (60 * 60)
         drawHandle(canvas, bmHandleMinute, MINUTE_TAIL, minutesDegree)
@@ -165,6 +167,47 @@ class AnalogClockView(
         timeInSeconds = time.get(Calendar.SECOND) +
                 60 * (time.get(Calendar.MINUTE) +
                 60 * time.get(Calendar.HOUR))
+    }
+
+    override fun onSaveInstanceState(): Parcelable {
+        val superState = super.onSaveInstanceState()!!
+        val savedState = SavedState(superState)
+        savedState.timeZone = timeZone
+        return savedState
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        val savedState = state as SavedState
+        super.onRestoreInstanceState(savedState.superState)
+        timeZone = savedState.timeZone
+    }
+
+    class SavedState : BaseSavedState {
+        lateinit var timeZone: TimeZone
+
+        constructor(superState: Parcelable) : super(superState)
+        constructor(parcel: Parcel) : super(parcel) {
+            val timeZoneId = parcel.readString()
+            timeZone = TimeZone.getTimeZone(timeZoneId)
+        }
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeString(timeZone.id)
+        }
+
+        companion object {
+            @JvmField
+            val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
+                override fun createFromParcel(parcel: Parcel): SavedState {
+                    return SavedState(parcel)
+                }
+
+                override fun newArray(size: Int): Array<SavedState?> {
+                    return Array(size) { null }
+                }
+            }
+        }
     }
 
     companion object {
